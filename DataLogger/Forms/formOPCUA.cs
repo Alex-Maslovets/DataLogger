@@ -11,8 +11,6 @@ using Opc.Ua.Client;
 using Siemens.UAClientHelper;
 using DataManager;
 
-
-
 namespace DataLogger
 {
     public partial class formDefineOPCUA : Form
@@ -28,7 +26,6 @@ namespace DataLogger
         private readonly OdbcConnectionStringBuilder connStringBuilder = new OdbcConnectionStringBuilder();
         private static BackgroundWorker BGW_OPCUA = null;
         #endregion
-
         public formDefineOPCUA()
         {
             InitializeComponent();
@@ -42,7 +39,7 @@ namespace DataLogger
             BGW_OPCUA.DoWork += BGW_OPCUA_DoWork;
             BGW_OPCUA.RunWorkerCompleted += BGW_OPCUA_RunWorkerCompleted;
         }
-
+        
         private void FormDefineOPCUA_Load(object sender, EventArgs e)
         {
             UpdateConfigStateOPCUA(Config.StateOPCUA);
