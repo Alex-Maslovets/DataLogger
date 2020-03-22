@@ -10,20 +10,21 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DataLogger</RootNamespace>
     <AssemblyName>DataLogger</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>DataLogger.Program</StartupObject>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <ApplicationIcon>services.ico</ApplicationIcon>
-    <ManifestCertificateThumbprint>1CFEA942954D7E0024DB2EBD43C2225E6AF9B1F0</ManifestCertificateThumbprint>
-    <ManifestKeyFile>DataLogger_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestCertificateThumbprint>034808449B45F13C52DA5AE83B6FB140B4A17D12</ManifestCertificateThumbprint>
+    <ManifestKeyFile>DataLogger_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
     <PublishUrl>http://localhost/DataLogger/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -35,7 +36,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>3.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -48,6 +49,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,49 +58,27 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TestRelease|AnyCPU'">
-    <OutputPath>bin\TestRelease\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TestRelease|x86'">
-    <OutputPath>bin\x86\TestRelease\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AspNetMMCExt" />
+    <Reference Include="Interop.OPCSiemensDAAutomation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>DLL\Interop.OPCSiemensDAAutomation.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Client, Version=1.0.250.1, Culture=neutral, PublicKeyToken=22186a540fc0b044, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\@OPC_UA_Client_1500\UA_Client_1500\Application\Opc.Ua.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Opc.Ua.Core, Version=1.0.250.1, Culture=neutral, PublicKeyToken=22186a540fc0b044, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\@OPC_UA_Client_1500\UA_Client_1500\Application\Opc.Ua.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -112,17 +92,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="formAbout.cs">
+    <Compile Include="Forms\formOPCUA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formAbout.Designer.cs">
+    <Compile Include="Forms\formOPCUA.Designer.cs">
+      <DependentUpon>formOPCUA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formAbout.Designer.cs">
       <DependentUpon>formAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Tools.cs" />
-    <Compile Include="formDefineTran.cs">
+    <Compile Include="Forms\formDefineTran.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formDefineTran.Designer.cs">
+    <Compile Include="Forms\formDefineTran.Designer.cs">
       <DependentUpon>formDefineTran.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -133,43 +119,48 @@
     <Compile Include="DataSources.cs" />
     <Compile Include="DataManager.cs">
     </Compile>
-    <Compile Include="formDefineODBC.cs">
+    <Compile Include="Forms\formDefineODBC.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formDefineODBC.Designer.cs">
+    <Compile Include="Forms\formDefineODBC.Designer.cs">
       <DependentUpon>formDefineODBC.cs</DependentUpon>
     </Compile>
-    <Compile Include="formDefineOPC.cs">
+    <Compile Include="Forms\formDefineOPC.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formDefineOPC.Designer.cs">
+    <Compile Include="Forms\formDefineOPC.Designer.cs">
       <DependentUpon>formDefineOPC.cs</DependentUpon>
     </Compile>
-    <Compile Include="formMain.cs">
+    <Compile Include="Forms\formMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formMain.Designer.cs">
+    <Compile Include="Forms\formMain.Designer.cs">
       <DependentUpon>formMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="formAbout.resx">
+    <Compile Include="UAClientHelperAPI.cs" />
+    <EmbeddedResource Include="Forms\formOPCUA.resx">
+      <DependentUpon>formOPCUA.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formAbout.resx">
       <DependentUpon>formAbout.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="formDefineODBC.resx">
+    <EmbeddedResource Include="Forms\formDefineODBC.resx">
       <DependentUpon>formDefineODBC.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="formDefineOPC.resx">
+    <EmbeddedResource Include="Forms\formDefineOPC.resx">
       <DependentUpon>formDefineOPC.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="formDefineTran.resx">
+    <EmbeddedResource Include="Forms\formDefineTran.resx">
       <DependentUpon>formDefineTran.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="formMain.resx">
+    <EmbeddedResource Include="Forms\formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -178,7 +169,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="DataLogger_1_TemporaryKey.pfx" />
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -189,16 +180,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Settings.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="OPCSiemensDAAutomation">
-      <Guid>{01704EB3-44B5-11D3-9C09-00105A3DD3AC}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PlayHS.png" />
@@ -283,7 +264,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\K4_Logo.bmp" />
+    <None Include="Resources\OPCUA_database.bmp" />
+    <Content Include="DLL\Opc.Ua.Client.dll" />
+    <Content Include="DLL\Opc.Ua.Core.dll" />
+    <Content Include="DLL\Interop.OPCSiemensDAAutomation.dll" />
+    <Content Include="Resources\Critical_Blink.gif" />
     <Content Include="services.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

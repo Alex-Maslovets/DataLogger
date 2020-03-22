@@ -125,7 +125,7 @@ namespace DataLogger
                     Exception exception = ODBCConnector.TestConnection(comboBoxDSN.Text, textBoxUserName.Text, textBoxPassword.Text);
                     if (exception == null)
                     {
-                        MessageBox.Show("Success", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Test completed successfully!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
@@ -134,5 +134,6 @@ namespace DataLogger
                 }
             }
         }
+
     }
 }

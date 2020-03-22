@@ -1,32 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLogger", "DataLogger\DataLogger.csproj", "{D685C6C7-EBD6-4424-91D9-F105B93FFB32}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DataLoggerSetup_2.0", "..\DataLoggerSetup_2.0\DataLoggerSetup_2.0\DataLoggerSetup_2.0.vdproj", "{3BC75C4D-7E45-409D-B716-17D963022DE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
-		TestRelease|Any CPU = TestRelease|Any CPU
-		TestRelease|x86 = TestRelease|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Debug|x86.ActiveCfg = Debug|x86
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Debug|x86.Build.0 = Debug|x86
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|x86.ActiveCfg = Release|x86
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|x86.Build.0 = Release|x86
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.TestRelease|Any CPU.ActiveCfg = TestRelease|Any CPU
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.TestRelease|Any CPU.Build.0 = TestRelease|Any CPU
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.TestRelease|x86.ActiveCfg = TestRelease|x86
-		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.TestRelease|x86.Build.0 = TestRelease|x86
+		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{D685C6C7-EBD6-4424-91D9-F105B93FFB32}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{3BC75C4D-7E45-409D-B716-17D963022DE2}.Debug|Any CPU.ActiveCfg = Debug
+		{3BC75C4D-7E45-409D-B716-17D963022DE2}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

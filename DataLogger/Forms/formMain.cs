@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using DataLogger.Properties;
 using DataManager;
 using Tools;
@@ -23,13 +22,27 @@ namespace DataLogger
         {
             hide();
             UpdateConfigState(Config.State);
+            UpdateConfigStateOPCUA(Config.StateOPCUA);
             Config.StateChange += ConfigStateChange;
+            Config.StateChangeOPCUA += ConfigStateChangeOPCUA;
+            OPCUA.ConnectStateChangeOPCUA += ConfigConnectStateChangeOPCUA;
+            savedInfoGridView_Update();
             Config.Statistics += ConfigStatistics;
         }
 
         private void ConfigStateChange(object sender, ConfigStateEventArgs e)
         {
             UpdateConfigState(e.State);
+        }
+
+        private void ConfigStateChangeOPCUA(object sender, ConfigStateOPCUAEventArgs e)
+        {
+            UpdateConfigStateOPCUA(e.State);
+        }
+
+        private void ConfigConnectStateChangeOPCUA(object sender, ConfigConnectStateOPCUAEventArgs e)
+        {
+            UpdateConfigConnectStateOPCUA(e.State);
         }
 
         private void UpdateRowStatistics(DataRow row, ConfigStatisticsEventArgs e)
@@ -130,10 +143,97 @@ namespace DataLogger
             }
         }
 
+        private void UpdateConfigStateOPCUA(ConfigStateOPCUA state)
+        {
+            trayNotifyIcon.Text = Application.ProductName + " - " + state.ToString();
+            SafeThread.SetTextStripItem(statusbar, statusConfigLabel, "Configuration state: " + state.ToString());
+            switch (state)
+            {
+                case ConfigStateOPCUA.Started:
+                    trayNotifyIcon.Text = Application.ProductName + " - OPCUA" + " - " + state.ToString();
+                    trayNotifyIcon.Icon = Properties.Resources.servicerunning;
+                    SafeThread.SetImageStripItem(statusbar, statusConfigLabel, Resources.Run);
+                    SafeThread.SetEnableStripItem(toolbar, startOPCUAButton, false);
+                    SafeThread.SetEnableStripItem(menu, startOPCUAMenuItem, false);
+                    SafeThread.SetEnableStripItem(trayMenu, startOPCUATrayMenuItem, false);
+                    SafeThread.SetEnableStripItem(toolbar, stopOPCUAButton, true);
+                    SafeThread.SetEnableStripItem(menu, stopOPCUAMenuItem, true);
+                    SafeThread.SetEnableStripItem(trayMenu, stopOPCUATrayMenuItem, true);
+                    break;
+                case ConfigStateOPCUA.Stopped:
+                    trayNotifyIcon.Text = Application.ProductName + " - OPCUA" + " - " + state.ToString();
+                    trayNotifyIcon.Icon = Properties.Resources.servicestopped;
+                    SafeThread.SetImageStripItem(statusbar, statusConfigLabel, Resources.Stop);
+                    if (Config.ReadyOPCUA)
+                    {
+                        SafeThread.SetEnableStripItem(toolbar, startOPCUAButton, true);
+                        SafeThread.SetEnableStripItem(menu, startOPCUAMenuItem, true);
+                        SafeThread.SetEnableStripItem(trayMenu, startOPCUATrayMenuItem, true);
+                    }
+                    else
+                    {
+                        SafeThread.SetEnableStripItem(toolbar, startOPCUAButton, false);
+                        SafeThread.SetEnableStripItem(menu, startOPCUAMenuItem, false);
+                        SafeThread.SetEnableStripItem(trayMenu, startOPCUATrayMenuItem, false);
+                    }
+                    SafeThread.SetEnableStripItem(toolbar, stopOPCUAButton, false);
+                    SafeThread.SetEnableStripItem(menu, stopOPCUAMenuItem, false);
+                    SafeThread.SetEnableStripItem(trayMenu, stopOPCUATrayMenuItem, false);
+                    break;
+            }
+        }
+
+        private void UpdateConfigConnectStateOPCUA(ConfigConnectStateOPCUA state)
+        {
+            switch (state)
+            {
+                case ConfigConnectStateOPCUA.ConnectEstablish:
+                    SafeThread.SetImageStripItem(statusbar, statusConnectOPCUALabel, Resources.OK);
+                    break;
+                case ConfigConnectStateOPCUA.Connecting:
+                    SafeThread.SetImageStripItem(statusbar, statusConnectOPCUALabel, Resources.Critical_Blink);
+                    break;
+            }
+        }
+
+        public void savedInfoGridView_Update()
+        {
+            try
+            {
+                savedInfoGridView.Rows.Clear();
+                string[] row1 = new string[] { "S7. OPCUA Server Name", Config.Sets.Primary_OPCUA_Node };
+                string[] row2 = new string[] { "S7. Data Block Name", Config.Sets.Primary_S7_DBName };
+                string[] row3 = new string[] { "S7. Record Array Name", Config.Sets.Primary_OPCUA_RecArray };
+                string[] row4 = new string[] { "S7. Reset Tag Name", Config.Sets.Primary_OPCUA_RecResetCount };
+                string[] row5 = new string[] { "S7. Number of Records", Config.Sets.Primary_SQL_NumberOfRec.ToString() };
+                string[] row6 = new string[] { "SQL Table Name", Config.Sets.Primary_SQL_TableName };
+                string[] row7 = new string[] { "SQL. ID Column Name", Config.Sets.Primary_SQL_IDColName };
+                string[] row8 = new string[] { "SQL. Value Column Name", Config.Sets.Primary_SQL_ValColName };
+                string[] row9 = new string[] { "SQL. Time Column Name", Config.Sets.Primary_SQL_DATColName };
+
+                object[] savedRows = new object[] { row1, row2, row3, row4, row5, row6, row7, row8, row9 };
+                foreach (string[] rowArray in savedRows)
+                {
+                    savedInfoGridView.Rows.Add(rowArray);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error");
+            }
+        }
+
         private void defineOPC()
         {
             formDefineOPC form = new formDefineOPC();
             form.ShowDialog(this);
+        }
+
+        private void defineOPCUA()
+        {
+            formDefineOPCUA form = new formDefineOPCUA();
+            form.ShowDialog(this);
+            checkStartOPCUAPossibility();
         }
 
         private void defineODBC()
@@ -175,6 +275,25 @@ namespace DataLogger
             }
         }
 
+        private void checkStartOPCUAPossibility()
+        {
+            if (!Config.Sets.Running_OPCUA)
+            {
+                if (Config.ReadyOPCUA)
+                {
+                    startOPCUAButton.Enabled = true;
+                    startOPCUAMenuItem.Enabled = true;
+                    startOPCUATrayMenuItem.Enabled = true;
+                }
+                else
+                {
+                    startOPCUAButton.Enabled = false;
+                    startOPCUAMenuItem.Enabled = false;
+                    startOPCUATrayMenuItem.Enabled = false;
+                }
+            }
+        }
+
         private void start(bool saving)
         {
             Config.Start();
@@ -184,6 +303,18 @@ namespace DataLogger
         private void stop(bool saving)
         {
             Config.Stop();
+            if (saving) Config.Save();
+        }
+
+        private void startOPCUA(bool saving)
+        {
+            Config.StartOPCUA();
+            if (saving) Config.Save();
+        }
+
+        private void stopOPCUA(bool saving)
+        {
+            Config.StopOPCUA();
             if (saving) Config.Save();
         }
 
@@ -243,9 +374,23 @@ namespace DataLogger
             defineTransaction();
         }
 
+        private void OPCUAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            defineOPCUA();
+        }
+        private void OPCUAConnectorButton_Click(object sender, EventArgs e)
+        {
+            defineOPCUA();
+        }
+
         private void startButton_Click(object sender, EventArgs e)
         {
             start(true);
+        }
+
+        private void startOPCUAButton_Click(object sender, EventArgs e)
+        {
+            startOPCUA(true);
         }
 
         private void startMenuItem_Click(object sender, EventArgs e)
@@ -253,24 +398,49 @@ namespace DataLogger
             start(true);
         }
 
+        private void startOPCUAMenuItem_Click(object sender, EventArgs e)
+        {
+            startOPCUA(true);
+        }
+
         private void startTrayMenuItem_Click(object sender, EventArgs e)
         {
             start(true);
         }
 
+        private void startOPCUATrayMenuItem_Click(object sender, EventArgs e)
+        {
+            startOPCUA(true);
+        }
+    
         private void stopButton_Click(object sender, EventArgs e)
         {
             stop(true);
+        }
+
+        private void stopOPCUAButton_Click(object sender, EventArgs e)
+        {
+            stopOPCUA(true);
         }
 
         private void stopMenuItem_Click(object sender, EventArgs e)
         {
             stop(true);
         }
+        
+        private void stopOPCUAMenuItem_Click(object sender, EventArgs e)
+        {
+            stopOPCUA(true);
+        }
 
         private void stopTrayMenuItem_Click(object sender, EventArgs e)
         {
             stop(true);
+        }
+
+        private void stopOPCUATrayMenuItem_Click(object sender, EventArgs e)
+        {
+            stopOPCUA(true);
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)

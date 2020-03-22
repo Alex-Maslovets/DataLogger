@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using DataManager;
 
@@ -15,6 +13,7 @@ namespace DataLogger
         static void Main()
         {
             if (Config.Sets.Running) Config.Start();
+            if (Config.Sets.Running_OPCUA) Config.StartOPCUA();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new formMain());

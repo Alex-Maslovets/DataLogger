@@ -14,14 +14,14 @@ namespace SQLDataSources
     public static class OdbcWrapper
     {
         [DllImport("odbc32.dll")]
-        public static extern int SQLDataSources(int EnvHandle, int Direction, StringBuilder ServerName, int ServerNameBufferLenIn,
+        public static extern int SQLDataSources(float EnvHandle, int Direction, StringBuilder ServerName, int ServerNameBufferLenIn,
     ref int ServerNameBufferLenOut, StringBuilder Driver, int DriverBufferLenIn, ref int DriverBufferLenOut);
         [DllImport("odbc32.dll")]
-        public static extern int SQLAllocEnv(ref int EnvHandle);
+        public static extern int SQLAllocEnv(ref float EnvHandle);
 
         public static List<OdbcSource> ListODBCsources()
         {
-            int envHandle = 0;
+            float envHandle = 0;
             const int SQL_FETCH_NEXT = 1;
             const int SQL_FETCH_FIRST_SYSTEM = 32;
             List<OdbcSource> sources = new List<OdbcSource>();

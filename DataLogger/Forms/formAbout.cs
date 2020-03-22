@@ -19,8 +19,8 @@ namespace DataLogger
         private string AssemblyCopyright
         {
             get
-           {
-               // Get all Copyright attributes on this assembly
+            {
+                // Get all Copyright attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
                 // If there aren't any Copyright attributes, return an empty string
                 if (attributes.Length == 0)
@@ -29,7 +29,7 @@ namespace DataLogger
                 return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
-        
+
         public formAbout()
         {
             InitializeComponent();
@@ -69,7 +69,7 @@ namespace DataLogger
             try
             {
                 link.LinkVisited = true;
-                System.Diagnostics.Process.Start("mailto:" + link.Text);                
+                System.Diagnostics.Process.Start("mailto:" + link.Text);
             }
             catch
             {

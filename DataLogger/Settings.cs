@@ -209,7 +209,19 @@ namespace Settings
         public DataSet TransactionBase;        
         public int UpdateRate;
         public bool Running;
-        
+
+        public string Primary_OPCUA_Node;
+        public string Primary_OPCUA_RecArray;
+        public string Primary_OPCUA_RecResetCount;
+        public string Primary_S7_DBName;
+        public string Primary_SQL_TableName;
+        public string Primary_SQL_IDColName;
+        public string Primary_SQL_ValColName;
+        public string Primary_SQL_DATColName;
+        public decimal Primary_SQL_NumberOfRec;
+
+        public bool Running_OPCUA;
+
         private string Key = "DataLogger";
 
         public AppSettings(string path, SingleEventLog log)
@@ -221,21 +233,35 @@ namespace Settings
             Primary_ODBC_Pass = null;
             TransactionBase = null;
             UpdateRate = 0;
-            Running = false;            
-        }
+            Running = false;
 
+            Primary_OPCUA_Node = "";
+            Primary_OPCUA_RecArray = "";
+            Primary_OPCUA_RecResetCount = "";
+            Primary_SQL_TableName = "";
+            Primary_SQL_NumberOfRec = 1;
+            Running_OPCUA = false;
+        }
+        
         public AppSettings() 
-            :base()
+          :base()
         {
-            Primary_OPC_Node = "";
+           Primary_OPC_Node = "";
             Primary_ODBC_DSN = "";
             Primary_ODBC_User = "";
             Primary_ODBC_Pass = null;
             TransactionBase = null;
             UpdateRate = 0;
             Running = false;
-        }
 
+            Primary_OPCUA_Node = "";
+            Primary_OPCUA_RecArray = "";
+            Primary_OPCUA_RecResetCount = "";
+            Primary_SQL_TableName = "";
+            Primary_SQL_NumberOfRec = 1;
+            Running_OPCUA = false;
+        }
+        
         private RSACryptoServiceProvider RSACryptoProvider()
         {
             // Creates the CspParameters object 
@@ -259,6 +285,13 @@ namespace Settings
             Primary_ODBC_DSN = "";
             UpdateRate = 1000;
             Running = false;
+
+            Primary_OPCUA_Node = "";
+            Primary_OPCUA_RecArray = "";
+            Primary_OPCUA_RecResetCount = "";
+            Primary_SQL_TableName = "";
+            Primary_SQL_NumberOfRec = 1;
+            Running_OPCUA = false;
 
             dt = new DataTable("TransactionTable");
             
@@ -308,7 +341,7 @@ namespace Settings
             {
                 if (Primary_ODBC_Pass != String.Empty)
                 {
-                    //Primary_ODBC_Pass = Crypt.Decrypt(Primary_ODBC_Pass, Key);
+                    Primary_ODBC_Pass = Crypt.Decrypt(Primary_ODBC_Pass, Key);
                 }
             }
         }

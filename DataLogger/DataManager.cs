@@ -11,6 +11,14 @@ using System.Runtime.InteropServices;
 using OPCSiemensDAAutomation;
 using Settings;
 using Tools;
+using System.Diagnostics;
+////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+using System.Linq;
+using Opc.Ua;
+using Opc.Ua.Client;
+using Siemens.UAClientHelper;
+using System.Security.Cryptography.X509Certificates;
+////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
 
 
 namespace DataManager
@@ -48,6 +56,18 @@ namespace DataManager
         Started,
         Stopping,
         Stopped,
+    }
+
+    public enum ConfigStateOPCUA
+    {
+        Started,
+        Stopped,
+    }
+    public enum ConfigConnectStateOPCUA
+    {
+        ConnectEstablish,
+        Connecting,
+        noConnect,
     }
 
     public class OPCEventArgs : EventArgs
@@ -123,6 +143,40 @@ namespace DataManager
             }
         }
     }
+    ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+    public class ConfigStateOPCUAEventArgs : EventArgs
+    {
+        private ConfigStateOPCUA state;
+
+        public ConfigStateOPCUAEventArgs(ConfigStateOPCUA state)
+        {
+            this.state = state;
+        }
+        public ConfigStateOPCUA State
+        {
+            get
+            {
+                return this.state;
+            }
+        }
+    }
+    public class ConfigConnectStateOPCUAEventArgs : EventArgs
+    {
+        private ConfigConnectStateOPCUA state;
+
+        public ConfigConnectStateOPCUAEventArgs(ConfigConnectStateOPCUA state)
+        {
+            this.state = state;
+        }
+        public ConfigConnectStateOPCUA State
+        {
+            get
+            {
+                return this.state;
+            }
+        }
+    }
+    ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
 
     public class ConfigStatisticsEventArgs : EventArgs
     {
@@ -172,6 +226,9 @@ namespace DataManager
     public delegate void OPCDataEventHandler(object sender, OPCDataEventArgs e);
     public delegate void OPCStateEventHandler(object sender, OPCStateEventArgs e);
     public delegate void ConfigStateEventHandler(object sender, ConfigStateEventArgs e);
+    ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+    public delegate void ConfigStateOPCUAEventHandler(object sender, ConfigStateOPCUAEventArgs e);
+    ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
     public delegate void StatisticsEventHandler(object sender, ConfigStatisticsEventArgs e);
 
     public static class Config
@@ -187,6 +244,12 @@ namespace DataManager
         private static bool reconnect = false;
         private static bool stopping = false;
         private static List<Transaction> transactions = new List<Transaction>();
+
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        private static ConfigStateOPCUA stateOPCUA = ConfigStateOPCUA.Stopped;
+        private static BackgroundWorker bgwStartingOPCUA = null;
+        private static BackgroundWorker bgwStoppingOPCUA = null;
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
 
         private static BackgroundWorker BGWStarting
         {
@@ -212,6 +275,34 @@ namespace DataManager
                 return bgwStopping;
             }
         }
+        
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        private static BackgroundWorker BGWStartingOPCUA
+        {
+            get
+            {
+                if (bgwStartingOPCUA == null)
+                {
+                    bgwStartingOPCUA = new BackgroundWorker();
+                    bgwStartingOPCUA.DoWork += bgwStartOPCUA;
+                }
+                return bgwStartingOPCUA;
+            }
+        }
+        private static BackgroundWorker BGWStoppingOPCUA
+        {
+            get
+            {
+                if (bgwStoppingOPCUA == null)
+                {
+                    bgwStoppingOPCUA = new BackgroundWorker();
+                    bgwStoppingOPCUA.DoWork += bgwStopOPCUA;
+                }
+                return bgwStoppingOPCUA;
+            }
+        }
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
         private static BackgroundWorker BGWDisposing
         {
             get
@@ -224,7 +315,7 @@ namespace DataManager
                 return bgwDisposing;
             }
         }
-
+        
         public static SingleEventLog Log
         {
             get
@@ -253,6 +344,17 @@ namespace DataManager
                 return state;
             }
         }
+        
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        public static ConfigStateOPCUA StateOPCUA
+        {
+            get
+            {
+                return stateOPCUA;
+            }
+        }
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
         public static bool IsDisposing
         {
             get
@@ -302,6 +404,21 @@ namespace DataManager
                 return false;
             }
         }
+        
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        public static bool ReadyOPCUA
+        {
+            get
+            {
+                if (Sets.Primary_ODBC_DSN != "")
+                {
+                    if (Config.Sets.Primary_OPCUA_Node != "") return true;
+                }
+                return false;
+            }
+        }
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
         public static void Dispose()
         {
             disposing = true;
@@ -313,6 +430,7 @@ namespace DataManager
 
         public static void Save()
         {
+            //savedInfoGridView_Update();
             if (appSets != null) appSets.Save();
         }
         public static void Start()
@@ -325,6 +443,20 @@ namespace DataManager
             Sets.Running = false;
             if (!BGWStopping.IsBusy) BGWStopping.RunWorkerAsync();
         }
+
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        public static void StartOPCUA()
+        {
+            if (!BGWStartingOPCUA.IsBusy) BGWStartingOPCUA.RunWorkerAsync();
+            if (!Sets.Running_OPCUA) Sets.Running_OPCUA = true;
+        }
+        public static void StopOPCUA()
+        {
+            Sets.Running_OPCUA = false;
+            if (!BGWStoppingOPCUA.IsBusy) BGWStoppingOPCUA.RunWorkerAsync();
+        }
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
         private static void CreateTransact()
         {
             string tableName;
@@ -358,6 +490,7 @@ namespace DataManager
                 if (Statistics != null) Statistics(tran, new ConfigStatisticsEventArgs(tran));
             }
         }
+
         private static void Starting(object sender, DoWorkEventArgs e)
         {
             state = ConfigState.Starting;            
@@ -386,6 +519,32 @@ namespace DataManager
                 if (StateChange != null) StateChange(null, new ConfigStateEventArgs(state));
             }
         }
+
+
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        private static void bgwStartOPCUA(object sender, DoWorkEventArgs e)
+        {
+            stateOPCUA = ConfigStateOPCUA.Started;
+            if (StateChangeOPCUA != null) StateChangeOPCUA(null, new ConfigStateOPCUAEventArgs(stateOPCUA));
+            Log.WriteEntry("The configuration OPCUA was started");
+            Console.WriteLine("The configuration OPCUA was started");
+            OPCUA classOPCUA = new OPCUA();
+            classOPCUA.start_BGW_OPCUA();
+        }
+        private static void bgwStopOPCUA(object sender, DoWorkEventArgs e)
+        {
+            if (stateOPCUA != ConfigStateOPCUA.Stopped)
+            {
+                stateOPCUA = ConfigStateOPCUA.Stopped;
+                Log.WriteEntry("The configuration OPCUA was stopped");
+                Console.WriteLine("The configuration OPCUA was stopped");
+                if (StateChangeOPCUA != null) StateChangeOPCUA(null, new ConfigStateOPCUAEventArgs(stateOPCUA));
+                OPCUA classOPCUA = new OPCUA();
+                classOPCUA.stop_BGW_OPCUA();
+            }
+        }
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
         private static void StartTransact()
         {
             foreach (Transaction tran in transactions)
@@ -425,6 +584,9 @@ namespace DataManager
         }
 
         public static event ConfigStateEventHandler StateChange;
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+        public static event ConfigStateOPCUAEventHandler StateChangeOPCUA;
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
         public static event StatisticsEventHandler Statistics;
     }
 
@@ -2007,5 +2169,417 @@ namespace DataManager
             if (ODBCConnStateChange != null) ODBCConnStateChange(this, e);
             if (Statistics != null) Statistics(this, new ConfigStatisticsEventArgs(this));
         }
+    }
+
+    public class OPCUA
+    {
+        ////////////////////////////////////////////////////////////////////// OPCUA //////////////////////////////////////////////////////////////////////
+
+        #region Fields
+        private Session mySession;
+        private UAClientHelperAPI myClientHelperAPI;
+        private UAClientHelperAPI newMyClientHelperAPI;
+        private EndpointDescription mySelectedEndpoint;
+        public EndpointDescriptionCollection edcEndpoints;
+        private static bool processExe = false;
+        private string savedServers = null;
+        private OdbcConnectionStringBuilder connStringBuilder = new OdbcConnectionStringBuilder();
+        private static BackgroundWorker BGW_OPCUA = null;
+        private static BackgroundWorker BGW_AutoConnect = null;
+        private List<string[]> myStructList;
+
+        private static ConfigConnectStateOPCUA connectStateOPCUA = ConfigConnectStateOPCUA.Connecting;
+        public delegate void ConfigConnectStateOPCUAEventHandler(object sender, ConfigConnectStateOPCUAEventArgs e);
+        public static event ConfigConnectStateOPCUAEventHandler ConnectStateChangeOPCUA;
+        public static ConfigConnectStateOPCUA ConnectStateOPCUA
+        {
+            get
+            {
+                return connectStateOPCUA;
+            }
+        }
+        #endregion
+        private void BGW_AutoConnect_DoWork(object sender_DW, DoWorkEventArgs e_DW)
+        {
+            while (true)
+            {
+                if (Config.Sets.Running_OPCUA)
+                {
+                    searchEndpoint(Config.Sets.Primary_OPCUA_Node);
+                }
+                Thread.Sleep(5000);
+            }   
+        }
+
+        public void searchEndpoint(string discoveryUrl)
+        {
+            /// ClientHelperAPI
+            //myClientHelperAPI = new UAClientHelperAPI();
+            newMyClientHelperAPI = new UAClientHelperAPI();
+            try
+            {
+                Console.WriteLine("TryToSearchEndpoint");
+                
+                ApplicationDescriptionCollection servers = newMyClientHelperAPI.FindServers(discoveryUrl);
+
+                if (!(savedServers == servers.ElementAt(0).DiscoveryUrls.ElementAt(0).ToString()))
+                {
+                    savedServers = servers.ElementAt(0).DiscoveryUrls.ElementAt(0).ToString();
+                    if (savedServers == null)
+                    {
+                        //ToDo
+                    }
+                    else
+                    {
+                        foreach (ApplicationDescription ad in servers)
+                        {
+                            foreach (string url in ad.DiscoveryUrls)
+                            {
+                                EndpointDescriptionCollection endpoints = myClientHelperAPI.GetEndpoints(url);
+                                edcEndpoints = endpoints;
+                                mySelectedEndpoint = endpoints.ElementAt(0);
+                                connectToServer();
+                            }
+                        }
+                    }
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message, "Error");
+                connectStateOPCUA = ConfigConnectStateOPCUA.Connecting;
+                if (ConnectStateChangeOPCUA != null) ConnectStateChangeOPCUA(null, new ConfigConnectStateOPCUAEventArgs(connectStateOPCUA));
+                disConnectFromServer();
+                Console.WriteLine("searchEndpoint : Error message:" + ex.Message);
+            }
+        }
+
+        public void connectToServer()
+        {
+            if (mySession != null && !mySession.Disposed)
+            {
+                //ToDo
+            }
+            else
+            {
+                try
+                {
+                    //Register mandatory events (cert and keep alive)
+                    myClientHelperAPI.KeepAliveNotification += new KeepAliveEventHandler(Notification_KeepAlive);
+                    myClientHelperAPI.CertificateValidationNotification += new CertificateValidationEventHandler(Notification_ServerCertificate);
+
+                    //Check for a selected endpoint
+                    if (mySelectedEndpoint != null)
+                    {
+                        //Call connect
+                        myClientHelperAPI.Connect(mySelectedEndpoint, false, "", "");
+                        //Extract the session object for further direct session interactions
+                        mySession = myClientHelperAPI.Session;
+                        
+                        if (Config.Sets.Primary_ODBC_DSN != "")
+                        {
+                            connStringBuilder.Dsn = Config.Sets.Primary_ODBC_DSN;
+                            connStringBuilder.Add("Uid", Config.Sets.Primary_ODBC_User);
+                            connStringBuilder.Add("Pwd", Config.Sets.Primary_ODBC_Pass);
+                        }
+                        connectStateOPCUA = ConfigConnectStateOPCUA.ConnectEstablish;
+                        if (ConnectStateChangeOPCUA != null) ConnectStateChangeOPCUA(null, new ConfigConnectStateOPCUAEventArgs(connectStateOPCUA));
+                        Console.WriteLine("ConnectToServer Is Done");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.Message, "Error");
+                    Console.WriteLine("connectToServer : Error message:" + ex.Message);
+                }
+            } 
+        }
+
+        public void disConnectFromServer()
+        {
+            //Check if sessions exists; If yes > delete subscriptions and disconnect
+            try 
+            {
+                if (mySession != null && !mySession.Disposed)
+                {
+                    //myClientHelperAPI.Disconnect();
+                    savedServers = null;
+                    myStructList = null;
+                    mySession = myClientHelperAPI.Session;
+                    Console.WriteLine("DisconnectFromServer Is Done");
+                }
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message, "Error");
+                Console.WriteLine("disConnectFromServer : Error message:" + ex.Message);
+            }
+
+        }
+
+        public void start_BGW_OPCUA()
+        {
+            if (!processExe)
+            {
+                string processName = "DataLogger";
+                processExe = Process.GetProcesses().Any(p => p.ProcessName == processName);
+
+                BGW_OPCUA = new BackgroundWorker();
+                BGW_OPCUA.WorkerReportsProgress = true;
+                BGW_OPCUA.WorkerSupportsCancellation = true;
+                BGW_OPCUA.DoWork += BGW_OPCUA_DoWork;
+                BGW_OPCUA.RunWorkerCompleted += BGW_OPCUA_RunWorkerCompleted;
+
+                BGW_AutoConnect = new BackgroundWorker();
+                BGW_AutoConnect.WorkerReportsProgress = true;
+                BGW_AutoConnect.WorkerSupportsCancellation = true;
+                BGW_AutoConnect.DoWork += BGW_AutoConnect_DoWork;
+                
+                if (!BGW_AutoConnect.IsBusy)
+                {
+                    BGW_AutoConnect.RunWorkerAsync();
+                }
+            }
+            try
+            {
+                myClientHelperAPI = new UAClientHelperAPI();
+
+                if (!BGW_OPCUA.IsBusy)
+                {
+                    BGW_OPCUA.RunWorkerAsync();
+                }
+                else
+                {
+                    Config.Log.WriteEntry("The configuration OPCUA was started already");
+                    Console.WriteLine("The configuration OPCUA was started already");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error");
+            }
+        }
+
+        public void stop_BGW_OPCUA()
+        {
+            savedServers = null;
+
+            if (BGW_OPCUA.IsBusy)
+            {
+                BGW_OPCUA.CancelAsync();
+            }
+            else
+            {
+                Config.Log.WriteEntry("The configuration OPCUA wasn't started");
+                Console.WriteLine("The configuration OPCUA wasn't started");
+            }
+        }
+
+
+        private void BGW_OPCUA_DoWork(object sender_DW, DoWorkEventArgs e_DW)
+        {
+        while (true)
+            {
+                int count = Decimal.ToInt32(Config.Sets.Primary_SQL_NumberOfRec);
+                myStructList = new List<string[]>();
+                List<String> values = new List<string>();
+                List<String> nodeIdStrings = new List<string>();
+                try
+                {
+                    if (BGW_OPCUA.CancellationPending)
+                    {
+                        e_DW.Cancel = true;
+                        return;
+                    }
+                    if ((connectStateOPCUA == ConfigConnectStateOPCUA.ConnectEstablish) && !e_DW.Cancel)
+                    {
+                        try
+                        {
+                            myStructList = myClientHelperAPI.ReadStructUdt("ns=3;s=\"" + Config.Sets.Primary_S7_DBName + "\".\"" + Config.Sets.Primary_OPCUA_RecArray + "\"");
+                        }
+                        catch (Exception ex)
+                        {
+                            if (BGW_OPCUA.IsBusy) BGW_OPCUA.CancelAsync();
+                            Config.StopOPCUA();
+                            Config.Save();
+                            MessageBox.Show(ex.Message, "Error");
+                        }
+
+                        if (count > myStructList.Count / 5)
+                        {
+                            count = myStructList.Count / 5;
+                            //numericRecordsCount.Invoke(new Action(() => numericRecordsCount.Maximum = count));
+                        }
+                        string[] row = new string[3 * count];
+                        for (int j = 0; j < count; j++)
+                        {
+                            row[3 * j] = myStructList[j * 5 + 3].ElementAt(1);
+                            row[3 * j + 1] = myStructList[j * 5 + 4].ElementAt(1);
+                            row[3 * j + 2] = myStructList[j * 5 + 2].ElementAt(1);
+                        }
+                        
+                        InsertRow(count, row);
+                        
+                        // Обнуление счётчика
+                        values.Clear();
+                        values.Add("0");
+                        nodeIdStrings.Clear();
+                        nodeIdStrings.Add("ns=3;s=\"" + Config.Sets.Primary_S7_DBName + "\".\"" + Config.Sets.Primary_OPCUA_RecResetCount + "\"");
+                        try
+                        {
+                            myClientHelperAPI.WriteValues(values, nodeIdStrings);
+                        }
+                        catch (Exception ex)
+                        {
+                            Config.StopOPCUA();
+                            Config.Save();
+                            MessageBox.Show(ex.Message, "Error");
+                        }
+                        Thread.Sleep(200);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("BGW_OPCUA_DoWork exception:" + ex.Message);
+                    Config.StopOPCUA();
+                    Config.Save();
+                    MessageBox.Show(ex.Message, "Error");
+                }
+            }
+               
+        }
+
+        private void BGW_OPCUA_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e_RWC)
+        {
+            if (e_RWC.Cancelled)
+                Console.WriteLine("Работа BackgroundWorker была прервана пользователем!");
+            else if (e_RWC.Error != null)
+                MessageBox.Show("Worker exception: " + e_RWC.Error);
+            else
+                Console.WriteLine("Работа закончена успешно.");
+            Config.StopOPCUA();
+            Config.Save();
+        }
+        
+        private void InsertRow(int count, string[] row)
+        {
+            try
+            {
+                StringBuilder queryString = new StringBuilder();
+                for (int i = 0; i < count; i++)
+                {
+                    queryString.Append("INSERT INTO " + Config.Sets.Primary_SQL_TableName + " (" + Config.Sets.Primary_SQL_IDColName + ", " + Config.Sets.Primary_SQL_ValColName + ", " + Config.Sets.Primary_SQL_DATColName + ") Values(" + row[3 * i] + ", " + row[3 * i + 1] + ", '" + row[3 * i + 2] + "')");
+                }
+
+                OdbcCommand command = new OdbcCommand(queryString.ToString());
+
+                using (OdbcConnection connection = new OdbcConnection(connStringBuilder.ToString()))
+                {
+                    command.Connection = connection;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    // The connection is automatically closed at the end of the Using block.
+                }
+                queryString.Clear();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("InsertRow exception:" + ex.Message);
+                Config.StopOPCUA();
+                Config.Save();
+                MessageBox.Show(ex.Message, "Error");
+            }
+        }
+
+        #region OpcEventHandlers
+        public void Notification_ServerCertificate(CertificateValidator cert, CertificateValidationEventArgs e)
+        {
+            //Handle certificate here
+            //To accept a certificate manually move it to the root folder (Start > mmc.exe > add snap-in > certificates)
+            //Or handle via UAClientCertForm
+            /*
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new CertificateValidationEventHandler(Notification_ServerCertificate), cert, e);
+                return;
+            }
+            */
+            try
+            {
+                //Search for the server's certificate in store; if found -> accept
+                X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly);
+                X509CertificateCollection certCol = store.Certificates.Find(X509FindType.FindByThumbprint, e.Certificate.Thumbprint, true);
+                store.Close();
+                if (certCol.Capacity > 0)
+                {
+                    e.Accept = true;
+                }
+                //Show cert dialog if cert hasn't been accepted yet
+                else
+                {
+                    /*
+                    if (!e.Accept & myCertForm == null)
+                    {
+                        myCertForm = new UAClientCertForm(e);
+                        myCertForm.ShowDialog();
+                    }
+                    */
+                }
+            }
+            catch
+            {
+                ;
+            }
+        }
+
+        public void Notification_MonitoredItem(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
+        {
+            /*
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new MonitoredItemNotificationEventHandler(Notification_MonitoredItem), monitoredItem, e);
+                return;
+            }
+            */
+            MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
+            if (notification == null)
+            {
+                return;
+            }
+        }
+
+        public void Notification_KeepAlive(Session sender, KeepAliveEventArgs e)
+        {
+            /*
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new KeepAliveEventHandler(Notification_KeepAlive), sender, e);
+                return;
+            }
+            */
+
+            try
+            {
+                // check for events from discarded sessions.
+                if (!Object.ReferenceEquals(sender, mySession))
+                {
+                    return;
+                }
+
+                // check for disconnected session.
+                if (!ServiceResult.IsGood(e.Status))
+                {
+                    // try reconnecting using the existing session state
+                    mySession.Reconnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error");
+            }
+        }
+        #endregion
     }
 }

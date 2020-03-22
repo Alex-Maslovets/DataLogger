@@ -31,12 +31,12 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.nudOPCUpdateRate = new System.Windows.Forms.NumericUpDown();
             this.textOPCNodeName = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudOPCUpdateRate)).BeginInit();
             this.SuspendLayout();
@@ -79,6 +79,15 @@
             this.textOPCNodeName.Name = "textOPCNodeName";
             this.textOPCNodeName.Size = new System.Drawing.Size(378, 20);
             this.textOPCNodeName.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(185, 59);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "milliseconds";
             // 
             // label3
             // 
@@ -131,15 +140,6 @@
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(185, 59);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "milliseconds";
-            // 
             // formDefineOPC
             // 
             this.AcceptButton = this.btnApply;
@@ -177,6 +177,5 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown nudOPCUpdateRate;
         private System.Windows.Forms.Label label2;
-
     }
 }
