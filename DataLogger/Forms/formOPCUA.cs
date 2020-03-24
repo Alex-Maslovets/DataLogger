@@ -10,6 +10,7 @@ using Opc.Ua;
 using Opc.Ua.Client;
 using Siemens.UAClientHelper;
 using DataManager;
+using System.IO;
 
 namespace DataLogger
 {
@@ -532,6 +533,7 @@ namespace DataLogger
 
         private void ButtonTest_Click(object sender, EventArgs e)
         {
+            
             Config.Sets.Primary_OPCUA_Node = discoveryTextBox.Text;
 
             Config.Sets.Primary_S7_DBName = textBoxS7DBName.Text;
@@ -558,6 +560,8 @@ namespace DataLogger
                 buttonTestConfig.Text = "Start";
                 BGW_OPCUA.CancelAsync();
             }
+            
+
         }
 
         private void ButtonSaveConfig_Click(object sender, EventArgs e)
@@ -627,6 +631,44 @@ namespace DataLogger
 
 
             opcTabControl.SelectedIndex = 0;
+        }
+
+
+        Stream myStream;
+        string path;
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                {
+                    // Code to write the stream goes here.
+                    path = saveFileDialog1.FileName;
+                    myStream.Close();
+                }
+            }
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                StreamWriter file = new StreamWriter(path, true);
+                file.WriteLine(DateTime.Now.ToString() + "Привет!");
+                file.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
     }
 }

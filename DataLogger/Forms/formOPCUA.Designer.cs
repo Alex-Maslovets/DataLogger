@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.connectPage = new System.Windows.Forms.TabPage();
             this.textBoxSQLDATColName = new System.Windows.Forms.TextBox();
             this.textBoxSQLValColName = new System.Windows.Forms.TextBox();
@@ -37,15 +37,9 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.textBoxSQLTableName = new System.Windows.Forms.TextBox();
-            this.textBoxS7RecResetCountName = new System.Windows.Forms.TextBox();
-            this.textBoxS7RecArrayName = new System.Windows.Forms.TextBox();
             this.discoveryTextBox = new System.Windows.Forms.TextBox();
-            this.numericS7RecordsCount = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.descriptionGridView = new System.Windows.Forms.DataGridView();
             this.attributeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -64,16 +58,24 @@
             this.Endpoints = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.endpointButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.buttonSaveConfig = new System.Windows.Forms.Button();
-            this.buttonTestConfig = new System.Windows.Forms.Button();
-            this.opcTabControl = new System.Windows.Forms.TabControl();
+            this.button1 = new System.Windows.Forms.Button();
             this.textBoxS7DBName = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.buttonSaveConfig = new System.Windows.Forms.Button();
+            this.buttonTestConfig = new System.Windows.Forms.Button();
+            this.textBoxS7RecArrayName = new System.Windows.Forms.TextBox();
+            this.textBoxS7RecResetCountName = new System.Windows.Forms.TextBox();
+            this.numericS7RecordsCount = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.opcTabControl = new System.Windows.Forms.TabControl();
+            this.button2 = new System.Windows.Forms.Button();
             this.connectPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericS7RecordsCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.descriptionGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericS7RecordsCount)).BeginInit();
             this.opcTabControl.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -160,15 +162,6 @@
             this.label8.TabIndex = 111;
             this.label8.Text = "SQL. ID Column name:";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 94);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(121, 13);
-            this.label4.TabIndex = 109;
-            this.label4.Text = "S7. Number of Records:";
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -177,24 +170,6 @@
             this.label7.Size = new System.Drawing.Size(93, 13);
             this.label7.TabIndex = 108;
             this.label7.Text = "SQL. Table name:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 68);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(126, 13);
-            this.label6.TabIndex = 107;
-            this.label6.Text = "S7. Reset Counter name:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 42);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 13);
-            this.label5.TabIndex = 106;
-            this.label5.Text = "S7. Records Array name:";
             // 
             // textBoxSQLTableName
             // 
@@ -205,27 +180,6 @@
             this.textBoxSQLTableName.TabIndex = 105;
             this.textBoxSQLTableName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBoxS7RecResetCountName
-            // 
-            this.textBoxS7RecResetCountName.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.textBoxS7RecResetCountName.Location = new System.Drawing.Point(137, 67);
-            this.textBoxS7RecResetCountName.Name = "textBoxS7RecResetCountName";
-            this.textBoxS7RecResetCountName.ReadOnly = true;
-            this.textBoxS7RecResetCountName.Size = new System.Drawing.Size(80, 20);
-            this.textBoxS7RecResetCountName.TabIndex = 104;
-            this.textBoxS7RecResetCountName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBoxS7RecArrayName
-            // 
-            this.textBoxS7RecArrayName.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBoxS7RecArrayName.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.textBoxS7RecArrayName.Location = new System.Drawing.Point(137, 40);
-            this.textBoxS7RecArrayName.Name = "textBoxS7RecArrayName";
-            this.textBoxS7RecArrayName.ReadOnly = true;
-            this.textBoxS7RecArrayName.Size = new System.Drawing.Size(80, 20);
-            this.textBoxS7RecArrayName.TabIndex = 103;
-            this.textBoxS7RecArrayName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // discoveryTextBox
             // 
             this.discoveryTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -235,30 +189,6 @@
             this.discoveryTextBox.Size = new System.Drawing.Size(255, 20);
             this.discoveryTextBox.TabIndex = 22;
             this.discoveryTextBox.Text = "opc.tcp://";
-            // 
-            // numericS7RecordsCount
-            // 
-            this.numericS7RecordsCount.BackColor = System.Drawing.SystemColors.Window;
-            this.numericS7RecordsCount.Location = new System.Drawing.Point(137, 93);
-            this.numericS7RecordsCount.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericS7RecordsCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericS7RecordsCount.Name = "numericS7RecordsCount";
-            this.numericS7RecordsCount.Size = new System.Drawing.Size(80, 20);
-            this.numericS7RecordsCount.TabIndex = 102;
-            this.numericS7RecordsCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericS7RecordsCount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // label3
             // 
@@ -295,16 +225,16 @@
             // attributeColumn
             // 
             this.attributeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.Gainsboro;
-            this.attributeColumn.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.Gainsboro;
+            this.attributeColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this.attributeColumn.HeaderText = "Attribute";
             this.attributeColumn.Name = "attributeColumn";
             // 
             // valueColumn
             // 
             this.valueColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.Gainsboro;
-            this.valueColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Gainsboro;
+            this.valueColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.valueColumn.HeaderText = "Value";
             this.valueColumn.Name = "valueColumn";
             // 
@@ -462,6 +392,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button2);
+            this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.textBoxS7DBName);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.buttonSaveConfig);
@@ -477,6 +409,36 @@
             this.groupBox2.Size = new System.Drawing.Size(600, 120);
             this.groupBox2.TabIndex = 117;
             this.groupBox2.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(223, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 120;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // textBoxS7DBName
+            // 
+            this.textBoxS7DBName.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBoxS7DBName.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.textBoxS7DBName.Location = new System.Drawing.Point(137, 13);
+            this.textBoxS7DBName.Name = "textBoxS7DBName";
+            this.textBoxS7DBName.ReadOnly = true;
+            this.textBoxS7DBName.Size = new System.Drawing.Size(80, 20);
+            this.textBoxS7DBName.TabIndex = 118;
+            this.textBoxS7DBName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 16);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(73, 13);
+            this.label11.TabIndex = 119;
+            this.label11.Text = "S7. DB name:";
             // 
             // buttonSaveConfig
             // 
@@ -502,6 +464,78 @@
             this.buttonTestConfig.UseVisualStyleBackColor = false;
             this.buttonTestConfig.Click += new System.EventHandler(this.ButtonTest_Click);
             // 
+            // textBoxS7RecArrayName
+            // 
+            this.textBoxS7RecArrayName.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBoxS7RecArrayName.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.textBoxS7RecArrayName.Location = new System.Drawing.Point(137, 40);
+            this.textBoxS7RecArrayName.Name = "textBoxS7RecArrayName";
+            this.textBoxS7RecArrayName.ReadOnly = true;
+            this.textBoxS7RecArrayName.Size = new System.Drawing.Size(80, 20);
+            this.textBoxS7RecArrayName.TabIndex = 103;
+            this.textBoxS7RecArrayName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBoxS7RecResetCountName
+            // 
+            this.textBoxS7RecResetCountName.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.textBoxS7RecResetCountName.Location = new System.Drawing.Point(137, 67);
+            this.textBoxS7RecResetCountName.Name = "textBoxS7RecResetCountName";
+            this.textBoxS7RecResetCountName.ReadOnly = true;
+            this.textBoxS7RecResetCountName.Size = new System.Drawing.Size(80, 20);
+            this.textBoxS7RecResetCountName.TabIndex = 104;
+            this.textBoxS7RecResetCountName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // numericS7RecordsCount
+            // 
+            this.numericS7RecordsCount.BackColor = System.Drawing.SystemColors.Window;
+            this.numericS7RecordsCount.Location = new System.Drawing.Point(137, 93);
+            this.numericS7RecordsCount.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericS7RecordsCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericS7RecordsCount.Name = "numericS7RecordsCount";
+            this.numericS7RecordsCount.Size = new System.Drawing.Size(80, 20);
+            this.numericS7RecordsCount.TabIndex = 102;
+            this.numericS7RecordsCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericS7RecordsCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(121, 13);
+            this.label4.TabIndex = 109;
+            this.label4.Text = "S7. Number of Records:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 42);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 13);
+            this.label5.TabIndex = 106;
+            this.label5.Text = "S7. Records Array name:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 68);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(126, 13);
+            this.label6.TabIndex = 107;
+            this.label6.Text = "S7. Reset Counter name:";
+            // 
             // opcTabControl
             // 
             this.opcTabControl.Controls.Add(this.connectPage);
@@ -512,25 +546,15 @@
             this.opcTabControl.Size = new System.Drawing.Size(624, 409);
             this.opcTabControl.TabIndex = 0;
             // 
-            // textBoxS7DBName
+            // button2
             // 
-            this.textBoxS7DBName.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBoxS7DBName.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.textBoxS7DBName.Location = new System.Drawing.Point(137, 13);
-            this.textBoxS7DBName.Name = "textBoxS7DBName";
-            this.textBoxS7DBName.ReadOnly = true;
-            this.textBoxS7DBName.Size = new System.Drawing.Size(80, 20);
-            this.textBoxS7DBName.TabIndex = 118;
-            this.textBoxS7DBName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 16);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(73, 13);
-            this.label11.TabIndex = 119;
-            this.label11.Text = "S7. DB name:";
+            this.button2.Location = new System.Drawing.Point(223, 29);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 121;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // formDefineOPCUA
             // 
@@ -543,12 +567,12 @@
             this.Load += new System.EventHandler(this.FormDefineOPCUA_Load);
             this.connectPage.ResumeLayout(false);
             this.connectPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericS7RecordsCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.descriptionGridView)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericS7RecordsCount)).EndInit();
             this.opcTabControl.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -595,5 +619,7 @@
         private System.Windows.Forms.Button buttonSaveConfig;
         private System.Windows.Forms.TextBox textBoxS7DBName;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
