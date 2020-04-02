@@ -18,13 +18,13 @@ namespace DataLogger
     {
         #region Fields
         private Session mySession;
-        private readonly UAClientHelperAPI myClientHelperAPI;
+        private UAClientHelperAPI myClientHelperAPI;
         private EndpointDescription mySelectedEndpoint;
-        //private readonly List<String> myRegisteredNodeIdStrings;
+        private List<String> myRegisteredNodeIdStrings;
         private ReferenceDescriptionCollection myReferenceDescriptionCollection;
         private List<string[]> myStructList;
         //private UAClientCertForm myCertForm;
-        private readonly OdbcConnectionStringBuilder connStringBuilder = new OdbcConnectionStringBuilder();
+        private OdbcConnectionStringBuilder connStringBuilder = new OdbcConnectionStringBuilder();
         private static BackgroundWorker BGW_OPCUA = null;
         #endregion
         public formDefineOPCUA()
@@ -327,8 +327,8 @@ namespace DataLogger
                 string[] row6 = new string[] { "Display Name", refDesc.DisplayName.ToString() };
                 string[] row7 = new string[] { "Node Class", refDesc.NodeClass.ToString() };
                 string[] row8 = new string[] { "Description", "null" };
-                try { row8 = new string[] { "Description", node.Description.ToString() }; }
-                catch { row8 = new string[] { "Description", "null" }; }
+                //try { row8 = new string[] { "Description", node.Description.ToString() }; }
+                //catch { row8 = new string[] { "Description", "null" }; }
                 string[] row9 = new string[] { "Type Definition", refDesc.TypeDefinition.ToString() };
                 string[] row10 = new string[] { "Write Mask", node.WriteMask.ToString() };
                 string[] row11 = new string[] { "User Write Mask", node.UserWriteMask.ToString() };
@@ -661,7 +661,7 @@ namespace DataLogger
             try
             {
                 StreamWriter file = new StreamWriter(path, true);
-                file.WriteLine(DateTime.Now.ToString() + "Привет!");
+                file.WriteLine(DateTime.Now.ToString() + " Привет!");
                 file.Close();
             }
             catch (Exception ex)
